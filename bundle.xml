@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<adapt_framework>
+    <bundle>
+        <label>Thread</label>
+        <name>thread</name>
+        <type>extension</type>
+        <version>1.0.0</version>
+        <namespace>\adapt\thread</namespace>
+        <description>Forum style threads for notes</description>
+        <copyright>2016 Adapt Framework</copyright>
+        <license>MIT</license>
+    </bundle>
+    <depends_on>
+        <bundle>
+            <name>adapt</name>
+            <version>2.0</version>
+        </bundle>
+    </depends_on>
+    <schema>
+        <add>
+            <table name="thread">
+                <field name="thread_id" key="primary" auto-increment="Yes">
+                    <data_type>bigint</data_type>
+                    <label>Thread #</label>
+                </field>
+                <field name="title">
+                    <data_type>varchar</data_type>
+                    <max_length>256</max_length>
+                    <label>Thread title</label>
+                </field>
+            </table>
+            <table name="post">
+                <field name="post_id" key="primary" auto-increment="Yes">
+                    <data_type>bigint</data_type>
+                    <label>Post #</label>
+                </field>
+                <field name="thread_id" key="foreign" referenced-table-name="thread" referenced-field-name="thread_id">
+                    <data_type>bigint</data_type>
+                    <label>Thread #</label>
+                </field>
+                <field name="language_id" key="foreign" referenced-table-name="language" referenced-field-name="language_id">
+                    <data_type>bigint</data_type>
+                    <label>Language #</label>
+                </field>
+                <field name="owner_id" key="foreign" referenced-table-name="user" referenced-field-name="user_id">
+                    <data_type>bigint</data_type>
+                    <label>User #</label>
+                </field>
+                <field name="post">
+                    <data_type>text</data_type>
+                    <label>Post content</label>
+                </field>
+            </table>
+        </add>
+    </schema>
+</adapt_framework>
