@@ -22,6 +22,10 @@
                 <name>locales</name>
                 <version>1.0</version>
             </bundle>
+            <bundle>
+                <name>users</name>
+                <version>1</version>
+            </bundle>
         </depends_on>
         <schema>
             <add>
