@@ -124,6 +124,44 @@ class controller_thread extends \adapt\controller
 
         $results = $sql->execute()->results();
 
+        // Grab the user data associated with the posts
+        $user_ids = array();
+        foreach ($results as $result) {
+            $user_ids[$result['owner_id']] = $result['owner_id'];
+        }
+        $user_ids = array_values($user_ids);
+
+        // Get the data from the database about the users involved
+        $sql = $this->data_source->sql;
+        $sql->select('*')
+            ->from('user', 'u')
+            ->join(
+                'contact',
+                'c',
+                new sql_cond('u.contact_id', sql::EQUALS, 'c.contact_id')
+            )
+            ->join(
+                'contact_email',
+                'e',
+                new sql_cond('e.contact_id', sql::EQUALS, 'c.contact_id')
+            )
+            ->where(
+                new sql_and(
+                    new sql_cond('u.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('c.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('e.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('u.user_id', sql::IN, '(' . implode(', ', $user_ids) . ')')
+                )
+            )
+            ->order('u.user_id');
+
+        $users = $sql->execute()->results();
+
+        // Loop over the posts and get the data from the user result set
+        for ($i = 0; $i < count($results); $i++) {
+            $results[$i]['user_info'] = $this->get_user_info($results[$i]['owner_id'], $users);
+        }
+
         $return = $this->model->to_hash();
         $return['posts'] = $results;
 
@@ -231,5 +269,39 @@ class controller_thread extends \adapt\controller
 
         // Return
         $this->respond('delete_thread', ['status' => 200]);
+    }
+
+    /**
+     * Method to scan the users array and to collate the information for the
+     * user_id being requested
+     * @param int $user_id
+     * @param array $users
+     * @return array
+     */
+    private function get_user_info($user_id, $users)
+    {
+        // Set up and check for empty
+        $return = array();
+        if (count($users) == 0) {
+            return $return;
+        }
+
+        // Loop through the input array looking for the user into
+        for ($i = 0; $i < count($users); $i++) {
+            if ($users[$i]['user_id'] == $user_id) {
+                $return['title'] = $users[$i]['title'];
+                $return['forename'] = $users[$i]['forename'];
+                $return['middle_names'] = $users[$i]['middle_names'];
+                $return['surname'] = $users[$i]['surname'];
+                $return['email'][] = $users[$i]['email'];
+            }
+
+            // We have gone past the user looked for - hardwire an exit from the loop
+            if ($user_id > $users[$i]['user_id']) {
+                break;
+            }
+        }
+
+        return $return;
     }
 }
