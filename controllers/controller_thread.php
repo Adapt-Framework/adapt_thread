@@ -201,7 +201,7 @@ class controller_thread extends \adapt\controller
         $post->owner_id = $this->session->user->user_id;
         $post->post = $this->request['post'];
         $post->save();
-        $post->date_created = new \DateTime();
+        $post->date_created = date_format(new \DateTime(), 'Y-m-d H:i:s');
 
         $this->respond('add_post', ['status' => 200, 'thread' => $this->model->to_hash(), 'post' => $post->to_hash()]);
     }
