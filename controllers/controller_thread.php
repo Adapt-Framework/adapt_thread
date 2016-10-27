@@ -201,9 +201,16 @@ class controller_thread extends \adapt\controller
         $post->owner_id = $this->session->user->user_id;
         $post->post = $this->request['post'];
         $post->save();
+        // Add in additional data about the user on the return
         $post->date_created = date_format(new \DateTime(), 'Y-m-d H:i:s');
+        $post = $post->to_hash();
+        $post['user_info']['title'] = $this->session->user->contact->title;
+        $post['user_info']['forename'] = $this->session->user->contact->forename;
+        $post['user_info']['middle_names'] = $this->session->user->contact->middle_names;
+        $post['user_info']['surname'] = $this->session->user->contact->surname;
+        $post['user_info']['email'] = $this->session->user->contact->email;
 
-        $this->respond('add_post', ['status' => 200, 'thread' => $this->model->to_hash(), 'post' => $post->to_hash()]);
+        $this->respond('add_post', ['status' => 200, 'thread' => $this->model->to_hash(), 'post' => $post]);
     }
 
     /**
