@@ -26,6 +26,10 @@
                 <name>users</name>
                 <version>1</version>
             </bundle>
+            <bundle>
+                <name>roles_and_permissions</name>
+                <version>1</version>
+            </bundle>
         </depends_on>
         <schema>
             <add>
