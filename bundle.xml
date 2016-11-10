@@ -66,10 +66,18 @@
                         <label>Post content</label>
                     </field>
                 </table>
+                <table name="permission_category">
+                    <record>
+                        <bundle_name>thread</bundle_name>
+                        <name>thread</name>
+                        <label>Thread</label>
+                        <description>Permissions to manage threads</description>
+                    </record>
+                </table>
                 <table name="permission">
                     <record>
-                        <permission_category_id get-from="permission_category" where-name-is="opportunities" />
-                        <bundle_name>horizon_organisations</bundle_name>
+                        <permission_category_id get-from="permission_category" where-name-is="thread" />
+                        <bundle_name>thred</bundle_name>
                         <php_key>PERM_USE_THREADS</php_key>
                         <name>perm_thread_use_threads</name>
                         <label>Allows the user to use notes threads</label>
