@@ -176,7 +176,7 @@ class controller_thread extends \adapt\controller
     {
         // Check for post body
         if (!$this->request['post'] || $this->request['post'] == '') {
-            $this->respond('add_post', ['status' => 400, 'errors' => 'No post data set']);
+            $this->respond('add_post', ['status' => 'bad_request', 'status_code' => 400, 'errors' => 'No post data set']);
             return;
         }
 
@@ -210,7 +210,7 @@ class controller_thread extends \adapt\controller
         $post['user_info']['surname'] = $this->session->user->contact->surname;
         $post['user_info']['email'] = $this->session->user->contact->email;
 
-        $this->respond('add_post', ['status' => 200, 'thread' => $this->model->to_hash(), 'post' => $post]);
+        $this->respond('add_post', ['status' => 'success', 'status_code' => 200, 'thread' => $this->model->to_hash(), 'post' => $post]);
     }
 
     /**
@@ -220,7 +220,7 @@ class controller_thread extends \adapt\controller
     {
         // Check that an ID has been supplied
         if (!is_numeric($this->request['post_id'])) {
-            $this->respond('delete_post', ['status' => 400, 'errors' => 'You must supply a post ID']);
+            $this->respond('delete_post', ['status' => 'bad_request', 'status_code' => 400, 'errors' => 'You must supply a post ID']);
             return;
         }
 
@@ -229,14 +229,14 @@ class controller_thread extends \adapt\controller
 
         // Check that the post record exists, and belongs to our thread
         if (!$post->is_loaded || !$this->model->is_loaded || $post->thread_id != $this->model->thread_id) {
-            $this->respond('delete_post', ['status' => 404, 'errors' => 'Something went wrong']);
+            $this->respond('delete_post', ['status' => 'not_found', 'status_code' => 404, 'errors' => 'Something went wrong']);
             return;
         }
 
         // Good to proceed
         $post->delete();
 
-        $this->respond('delete_post', ['status' => 200]);
+        $this->respond('delete_post', ['status' => 'success', 'status_code' => 200]);
     }
 
     /**
@@ -246,13 +246,13 @@ class controller_thread extends \adapt\controller
     {
         // Check that an ID has been supplied
         if (!is_numeric($this->request['thread_id'])) {
-            $this->respond('delete_thread', ['status' => 400, 'errors' => 'You must supply a thread ID']);
+            $this->respond('delete_thread', ['status' => 'bad_request', 'status_code' => 400, 'errors' => 'You must supply a thread ID']);
             return;
         }
 
         // Check that we are working on this thread
         if (!$this->model->is_loaded || $this->model->thread_id != $this->request['thread_id']) {
-            $this->respond('delete_thread', ['status' => 404, 'errors' => 'Something went wrong']);
+            $this->respond('delete_thread', ['status' => 'not_found', 'status_code' => 404, 'errors' => 'Something went wrong']);
             return;
         }
 
@@ -275,7 +275,7 @@ class controller_thread extends \adapt\controller
         $this->model->delete();
 
         // Return
-        $this->respond('delete_thread', ['status' => 200]);
+        $this->respond('delete_thread', ['status' => 'success', 'status_code' => 200]);
     }
 
     /**
