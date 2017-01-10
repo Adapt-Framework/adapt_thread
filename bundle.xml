@@ -6,6 +6,8 @@
         <type>extension</type>
         <version>1.0.0</version>
         <namespace>\adapt\thread</namespace>
+        <version_status>release</version_status>
+        <availability>public</availability>
         <description>Forum style threads for notes</description>
         <copyright>2016 Adapt Framework</copyright>
         <license>MIT</license>
