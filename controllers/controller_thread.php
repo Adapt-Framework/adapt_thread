@@ -285,7 +285,7 @@ class controller_thread extends \adapt\controller
      * @param array $users
      * @return array
      */
-    private function get_user_info($user_id, $users)
+    protected function get_user_info($user_id, $users)
     {
         // Set up and check for empty
         $return = array();
