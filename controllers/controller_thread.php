@@ -112,55 +112,38 @@ class controller_thread extends \adapt\controller
         // Load the posts
         $sql = $this->data_source->sql;
 
-        $sql->select('*')
-            ->from('post')
-            ->where(
-                new sql_and(
-                    new sql_cond('thread_id', sql::EQUALS, $this->model->thread_id),
-                    new sql_cond('date_deleted', sql::IS, new sql_null())
-                )
+        $sql->select(
+                'p.*',
+                'uc.title as title',
+                'uc.forename as forename',
+                'uc.surname as surname'
             )
-            ->order_by('date_created');
-
-        $results = $sql->execute()->results();
-
-        // Grab the user data associated with the posts
-        $user_ids = array();
-        foreach ($results as $result) {
-            $user_ids[$result['owner_id']] = $result['owner_id'];
-        }
-        $user_ids = array_values($user_ids);
-
-        // Get the data from the database about the users involved
-        $sql = $this->data_source->sql;
-        $sql->select('*')
-            ->from('user', 'u')
-            ->join(
-                'contact',
-                'c',
-                new sql_cond('u.contact_id', sql::EQUALS, 'c.contact_id')
-            )
-            ->join(
-                'contact_email',
-                'e',
-                new sql_cond('e.contact_id', sql::EQUALS, 'c.contact_id')
-            )
-            ->where(
+            ->from('post', 'p')
+            ->left_join(
+                'user',
+                'u',
                 new sql_and(
                     new sql_cond('u.date_deleted', sql::IS, new sql_null()),
-                    new sql_cond('c.date_deleted', sql::IS, new sql_null()),
-                    new sql_cond('e.date_deleted', sql::IS, new sql_null()),
-                    new sql_cond('u.user_id', sql::IN, '(' . implode(', ', $user_ids) . ')')
+                    new sql_cond('u.user_id', sql::EQUALS, 'p.owner_id')
                 )
             )
-            ->order('u.user_id');
+            ->left_join(
+                'contact',
+                'uc',
+                new sql_and(
+                    new sql_cond('uc.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('uc.contact_id', sql::EQUALS, 'u.contact_id')
+                )
+            )
+            ->where(
+                new sql_and(
+                    new sql_cond('p.thread_id', sql::EQUALS, $this->model->thread_id),
+                    new sql_cond('p.date_deleted', sql::IS, new sql_null())
+                )
+            )
+            ->order_by('p.date_created', false);
 
-        $users = $sql->execute()->results();
-
-        // Loop over the posts and get the data from the user result set
-        for ($i = 0; $i < count($results); $i++) {
-            $results[$i]['user_info'] = $this->get_user_info($results[$i]['owner_id'], $users);
-        }
+        $results = $sql->execute()->results();
 
         $return = $this->model->to_hash();
         $return['posts'] = $results;
