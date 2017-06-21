@@ -22,15 +22,15 @@
             </bundle>
             <bundle>
                 <name>locales</name>
-                <version>1.0</version>
+                <version>0.8</version>
             </bundle>
             <bundle>
                 <name>users</name>
-                <version>1</version>
+                <version>1.0</version>
             </bundle>
             <bundle>
                 <name>roles_and_permissions</name>
-                <version>1</version>
+                <version>0.9</version>
             </bundle>
         </depends_on>
         <schema>
